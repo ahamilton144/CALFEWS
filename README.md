@@ -1,4 +1,10 @@
+
+**Note: This is a fork associated with the following paper. You can find more specifics about the analysis for this paper on the "FKC_experiment_longleaf" branch. If you are interested in using the CALFEWS model more generally, please refer to the original repository, https://github.com/hbz5000/CALFEWS.**
+
+Hamilton, A.L., Zeff, H.B., Characklis, G.W., & P.M. Reed. (2022). Resilient California water portfolios require infrastructure investment partnerships that are viable for all partners. (In review, [pre-print available](https://www.essoar.org/doi/10.1002/essoar.10508968.2)).
+
 # California Food-Energy-Water System (CALFEWS)
+
 This repository contains all code and data for the California Food-Energy-Water System (CALFEWS), an open-sourced, Python/Cython-based model for simulating the integrated, multi-sector dynamics of water supply in the Central Valley of California.  CALFEWS captures system dynamics across multiple scales, from coordinated management of inter-basin water supply projects at the state and regional scale, to agent-based representation of conjunctive surface water and groundwater supplies at the scale of irrigation and water storage districts. Its flexible, adaptive, rules-based representation allows CALFEWS to explore alternative climate, infrastructure, and regulation scenarios, and it is also interoperable with power dispatch and agricultural production models. This tool can provide decision-makers and analysts with a platform to generate a wide range of internally consistent scenarios for the integrated management of water supply, energy generation, and food production.
 
 More information on the CALFEWS model, and comparison of model output to historical data, can be found in the following manuscript:
