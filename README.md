@@ -3,6 +3,8 @@ For general information on the California Food-Energy-Water System (CALFEWS) sim
 
 Zeff, H.B., Hamilton, A.L., Malek, K., Herman, J.D., Cohen, J.S., Medellin-Azuara, J., Reed, P.M., and G.W. Characklis. (2021). California's Food-Energy-Water System: An Open Source Simulation Model of Adaptive Surface and Groundwater Management in the Central Valley. *Environmental Modelling & Software, 141*: 105052. [https://doi.org/10.1016/j.envsoft.2021.105052](https://doi.org/10.1016/j.envsoft.2021.105052) 
 
+More generally, those interested in using CALFEWS beyond the context of the paper below are encouraged to switch to the main repository, https://github.com/hbz5000/CALFEWS.
+
 Licensed under the MIT License, 2017-2022.
 
 ## Infrastructure partnership design experiment
