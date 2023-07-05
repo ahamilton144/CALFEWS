@@ -1,7 +1,12 @@
+**Note: This is a fork associated with the two papers below. If you are interested in using the CALFEWS model more generally, please refer to the original repository, https://github.com/hbz5000/CALFEWS.**
 
-**Note: This is a fork associated with the following paper. You can find more specifics about the analysis for this paper on the "FKC_experiment_longleaf" branch. If you are interested in using the CALFEWS model more generally, please refer to the original repository, https://github.com/hbz5000/CALFEWS.**
+First, you can find code and instructions for producing the analysis for the following paper on the **"FKC_experiment_longleaf" branch**. 
 
-Hamilton, A.L., Zeff, H.B., Characklis, G.W., & P.M. Reed. (2022). Resilient California water portfolios require infrastructure investment partnerships that are viable for all partners. (In review, [pre-print available](https://www.essoar.org/doi/10.1002/essoar.10508968.2)).
+Hamilton, A.L., Zeff, H.B., Characklis, G.W., & P.M. Reed. (2022). Resilient California water portfolios require infrastructure investment partnerships that are viable for all partners. *Earth's Future, 10*(4), e2021EF002573. [https://doi.org/10.1029/2021EF002573](https://doi.org/10.1029/2021EF002573).
+
+Second, you can find code and instructions for producing the analysis for the following paper on the **"MORDM_experiment_paper1" branch**. 
+
+Hamilton, A.L.,  Reed, P.M., Gupta, R.S., Zeff, H.B., Characklis, G.W., & (2023). Resilient water infrastructure partnerships in institutionally complex systems face challenging supply and financial risk tradeoffs. *(In review)*.
 
 # California Food-Energy-Water System (CALFEWS)
 
