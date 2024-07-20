@@ -6,7 +6,7 @@ Hamilton, A.L., Zeff, H.B., Characklis, G.W., & P.M. Reed. (2022). Resilient Cal
 
 Second, you can find code and instructions for producing the analysis for the following paper on the **"MORDM_experiment_paper1" branch**. 
 
-Hamilton, A.L.,  Reed, P.M., Gupta, R.S., Zeff, H.B., Characklis, G.W., & (2023). Resilient water infrastructure partnerships in institutionally complex systems face challenging supply and financial risk tradeoffs. *(In review)*.
+Hamilton, A.L.,  Reed, P.M., Gupta, R.S., Zeff, H.B., Characklis, G.W., & (2024). Resilient water infrastructure partnerships in institutionally complex systems face challenging supply and financial risk tradeoffs. *(Accepted to Nature Communications)*.
 
 # California Food-Energy-Water System (CALFEWS)
 
