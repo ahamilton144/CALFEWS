@@ -120,12 +120,28 @@ cdef class main_cy():
 
     elif self.model_mode == 'validation':
       demand_type = 'pesticide'
+      #demand_type = 'landiq'
       input_data_file = 'calfews_src/data/input/calfews_src-data.csv'
+
+    elif self.model_mode == 'climate_ensemble':
+      demand_type = 'pesticide'
+      #demand_type = 'landiq'
+      base_data_file = 'calfews_src/data/input/calfews_src-data.csv'
+      new_inputs = Inputter(base_data_file, expected_release_datafile, self.model_mode, self.results_folder)
+      if new_inputs.has_full_inputs[self.flow_input_type][self.flow_input_source]:
+        input_data_file = new_inputs.flow_input_source[self.flow_input_type][self.flow_input_source]
+      else:
+        # run initialization routine
+        new_inputs.run_initialization('XXX')
+        # end simulation if error has been through within inner cython/c code (i.e. keyboard interrupt)
+        PyErr_CheckSignals()
+        if True:
+          new_inputs.run_routine(self.flow_input_type, self.flow_input_source)
+          input_data_file = self.results_folder + '/' + new_inputs.export_series[self.flow_input_type][self.flow_input_source]  + "_0.csv"
 
     ### reset seed again to match old code
     if (self.seed > 0):
       np.random.seed(self.seed)
-
     ### setup northern & southern models & run initialization
     PyErr_CheckSignals()
     if True:
@@ -170,7 +186,6 @@ cdef class main_cy():
     # # reset seed the same each sample k
     # if (self.seed > 0):
     #   np.random.seed(self.seed)
-
     ### simulation length (days)
     if (self.short_test < 0):
       timeseries_length = min(self.modelno.T, self.modelso.T)
@@ -219,8 +234,6 @@ cdef class main_cy():
   def calc_objectives(self):
     ### "starter" objectives: (1) avg water deliveries for friant contracts; (2) min annual water deliveries for friant contracts
     nt = len(self.modelno.shasta.baseline_inf)
-    with open(self.output_list, 'r') as f:
-      output_list = json.load(f)
 
     self.objs = {}
     total_delivery = np.zeros(self.modelno.T)
@@ -245,7 +258,7 @@ cdef class main_cy():
 
   def output_results(self):
     ### data output function from calfews_src/util.py
-    data_output(self.output_list, self.results_folder, self.clean_output, {}, self.modelno, self.modelso, self.objs) 
+    data_output(self.results_folder, self.clean_output, self.modelno, self.modelso, self.objs)
         
     if (self.save_full):
       try:
@@ -260,8 +273,6 @@ cdef class main_cy():
         print(e)
     
     self.running_sim = False
-
-
 
 
 

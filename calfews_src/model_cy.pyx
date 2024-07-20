@@ -481,6 +481,8 @@ cdef class Model():
       self.load_pesticide_acreage()
     elif self.demand_type == 'pmp':
       self.load_pmp_model()
+    elif self.demand_type == 'landiq':
+      self.load_landiq_acreage()
     
     self.allocate_private_contracts()
 	
@@ -1475,6 +1477,8 @@ cdef class Model():
           for i,crops in enumerate(district_land.crop_list):
             for private_crops in private_obj.crop_list:
               if private_crops == crops:
+                # print(private_obj.contract_fractions[district_key])
+                # print(district_land.acreage['BN'][i])
                 private_acres += private_obj.contract_fractions[district_key]*district_land.acreage['BN'][i]
                 district_land.private_acreage[private_crops] += private_obj.contract_fractions[district_key]*district_land.acreage['BN'][i]
                 if private_obj.has_pesticide[district_key]:
@@ -1595,7 +1599,98 @@ cdef class Model():
           for irr_district in self.district_keys[district_key]:
             irr_district.max_recovery += leiu_obj.leiu_ownership[district_key]*leiu_obj.leiu_recovery/num_districts
       
+  def load_landiq_acreage(self):
+    cdef District district_obj
 
+    id_dict = {}
+    id_dict['ALT'] = 'Alta Irrigation District'
+    id_dict['ARV'] = 'Arvin - Edison Water Storage District'
+    id_dict['BEL'] = 'Belridge Water Storage District'
+    id_dict['BDM'] = 'Berrenda Mesa Water District'
+    id_dict['BVA'] = 'Buena Vista Water Storage District'
+    id_dict['CWO'] = 'Cawelo Water District'
+    id_dict['CWC'] = 'Chowchilla Water District'
+    id_dict['CNS'] = 'Consolidated Irrigation District'
+    id_dict['DLE'] = 'Delano - Earlimart Irrigation District'
+    id_dict['EXE'] = 'Exeter Irrigation District'
+    id_dict['FRS'] = 'Fresno Irrigation District'
+    id_dict['HML'] = 'Henry Miller Water District'
+    id_dict['KWD'] = 'Kaweah Delta Water Conservation District'
+    id_dict['KRT'] = 'Kern - Tulare Water District'
+    id_dict['KND'] = 'Kern Delta Water District'
+    id_dict['LND'] = 'Lindmore Irrigation District'
+    id_dict['LDS'] = 'Lindsay - Strathmore Irrigation District'
+    id_dict['LHL'] = 'Lost Hills Water District'
+    id_dict['LWT'] = 'Lower Tule River Irrigation District'
+    id_dict['MAD'] = 'Madera Irrigation District'
+    id_dict['NKN'] = 'North Kern Water Storage District'
+    id_dict['ORC'] = 'Orange Cove Irrigation District'
+    id_dict['PIX'] = 'Pixley Irrigation District'
+    id_dict['PRT'] = 'Porterville Irrigation District'
+    id_dict['RRB'] = 'Rosedale - Rio Bravo Water Storage District'
+    id_dict['SAU'] = 'Saucelito Irrigation District'
+    id_dict['SMI'] = 'Semitropic Water Service District'
+    id_dict['SFW'] = 'Shafter - Wasco Irrigation District'
+    id_dict['SSJ'] = 'Southern San Joaquin Municipal Utility District'
+    id_dict['TPD'] = 'Tea Pot Dome Water District'
+    id_dict['THC'] = 'Tehachapi - Cummings County Water District'
+    id_dict['TBA'] = 'Terra Bella Irrigation District'
+    id_dict['TUL'] = 'Tulare Irrigation District'
+    id_dict['TLB'] = 'Tulare Lake Basin Water Storage District'
+    id_dict['WKN'] = 'West Kern Water District'
+    id_dict['WSL'] = 'Westlands Water District'
+    id_dict['WRM'] = 'Wheeler Ridge - Maricopa Water Storage District'
+    
+    crop_dict = {}
+    crop_dict['Alfalfa'] = 'alfalfa'
+    crop_dict['Almonds'] = 'almond'
+    crop_dict['Beans Dry'] = 'field_misc'
+    crop_dict['Berries'] = 'strawberry'
+    crop_dict['Corn'] = 'corn'
+    crop_dict['Cotton'] = 'cotton'
+    crop_dict['Cucurbits'] = 'squash'
+    crop_dict['Field and Grain'] = 'field_misc'
+    crop_dict['Grapes'] = 'grape'
+    crop_dict['Lettuce'] = 'vegetable_small'
+    crop_dict['Onions and Garlic'] = 'onion'
+    crop_dict['Orchards'] = 'deciduous_misc'
+    crop_dict['Pasture'] = 'pasture'
+    crop_dict['Pistachios'] = 'pistachio'
+    crop_dict['Potatoes'] = 'potatoe'
+    crop_dict['Safflower'] = 'safflower'
+    crop_dict['Subtropical'] = 'subtropical_misc'
+    crop_dict['Tomatoes'] = 'tomato'
+    crop_dict['Truck'] = 'vegetable_small'
+    crop_dict['Walnuts'] = 'walnut'
+    crop_dict['Young Perennial'] = 'almond_immature'
+    
+    landiq_data = pd.read_csv('calfews_src/data/input/landiq_data/LandIQ2018_applied_water_calfews_summary.csv')
+    for district_obj in self.district_list:
+      if district_obj.key in id_dict:
+        district_obj.acreage = {}
+        district_obj.crop_list = []
+        for wyt in ['W', 'AN', 'BN', 'D', 'C']:
+          district_obj.acreage[wyt] = []
+        district_filename = id_dict[district_obj.key]
+        this_district_land_iq = landiq_data[landiq_data['district'] == district_filename]
+        this_district_acreage = {}
+        if len(this_district_land_iq) > 0:
+          for index, row in this_district_land_iq.iterrows():
+            crop_name = crop_dict[row['CV_Ag_Code']]
+            if crop_name in district_obj.crop_list:
+              for wyt in ['W', 'AN', 'BN', 'D', 'C']:
+                this_district_acreage[crop_name] += row['Acres_Calc'] / 1000.0
+            else:
+              district_obj.crop_list.append(crop_name)
+              for wyt in ['W', 'AN', 'BN', 'D', 'C']:
+                this_district_acreage[crop_name] = row['Acres_Calc'] / 1000.0
+        else:
+          print(district_filename)
+        for crop in district_obj.crop_list:
+          for wyt in ['W', 'AN', 'BN', 'D', 'C']:
+            district_obj.acreage[wyt].append(this_district_acreage[crop])
+          
+	  
   def load_pesticide_acreage(self):
     cdef District district_obj
 
@@ -3333,7 +3428,7 @@ cdef class Model():
         contract_obj.tot_new_alloc = 0.0
         for district_obj in self.district_list:
           use_contract = 0
-          for contract_key in district_obj.contract_list:
+          for contract_key in self.contract_keys:
             if contract_key == contract_obj.name:
               use_contract = 1
           if use_contract == 1:
@@ -3344,7 +3439,7 @@ cdef class Model():
 
         for private_obj in self.private_list:
           use_contract = 0
-          for contract_key in private_obj.contract_list:
+          for contract_key in self.contract_keys:
             if contract_key == contract_obj.name:
               use_contract = 1
           if use_contract == 1:	
@@ -3355,7 +3450,7 @@ cdef class Model():
 
         for private_obj in self.city_list:
           use_contract = 0
-          for contract_key in private_obj.contract_list:
+          for contract_key in self.contract_keys:
             if contract_key == contract_obj.name:
               use_contract = 1
           if use_contract == 1:	  
@@ -4525,7 +4620,7 @@ cdef class Model():
               location_delivery, current_storage, deliveries, priority_bank_space, actual_deliveries, direct_deliveries, recharge_deliveries, undelivered, \
               private_delivery_constraint, delivery_to_private, turnout_available, new_excess_flow, remaining_excess_flow
       int toggle_partial_delivery, toggle_district_recharge, starting_point, canal_loc, num_members, new_canal_size, turnback_end, toggle_demand_count, \
-              canal_loc_int
+              canal_loc_int, max_turnback_loops, repeat_turnback
       str list_member, zz, district_key, participant_key, district2_key, contract_key, new_flow_dir
       list type_list, priority_list, contract_list
       dict empty_demands, type_deliveries, type_demands, type_fractions, canal_fractions, priorities, priority_turnout_adjusted, delivery_by_contract, \
@@ -4822,7 +4917,8 @@ cdef class Model():
         #if there is space & demand, 'jump' into new canal - outputs serve as turnouts from the current canal
         location_delivery = min(location_delivery, turnout_available)
         if turnout_available > 0.001 and location_delivery > 0.001:
-          new_excess_flow, canal_demands = self.distribute_canal_deliveries(dowy, canal_obj, canal.key, contract_canal, location_delivery, new_canal_size, wateryear, new_flow_dir, flow_type, search_type, canals_passed_through)
+          new_excess_flow, canal_demands = self.distribute_canal_deliveries(dowy, canal_obj, canal.key, contract_canal, location_delivery, new_canal_size,
+                                                                            wateryear, new_flow_dir, flow_type, search_type, canals_passed_through)
           #update canal demands
           for zz in type_list:
             canal.demand[zz][canal_loc] = canal_demands[zz]
@@ -4852,18 +4948,27 @@ cdef class Model():
           for zz in type_list:
             type_demands[zz] += canal.demand[zz][canal_loc_int]
         if canal_loc_int == canal_loc:
-          toggle_demand_count = 1  
+          toggle_demand_count = 1
 
-      if turnback_flow > 0.003:
-        remaining_excess_flow, unmet_canal_demands = self.distribute_canal_deliveries(dowy, canal, prev_canal, contract_canal, turnback_flow, turnback_end, wateryear, flow_dir, flow_type, search_type, canals_passed_through)
-        excess_flow += remaining_excess_flow
-        available_capacity_int = max(available_flow, 0.0)
-        for zz in type_list:
-          if type_demands[zz] > self.epsilon:
-            type_fractions[zz] = max(min(available_capacity_int/type_demands[zz], 1.0), 0.0)
-          else:
-            type_fractions[zz] = 0.0
-          available_capacity_int -= type_demands[zz]*type_fractions[zz]
+          ### if there is still flow left to distribute, run through the loop again recursively.
+          ### was having issue with infinite loops due to accumulated errors - make sure we don't do this more than 1000 times in a row
+          if turnback_flow > 0.003:
+            max_turnback_loops = 1000
+            repeat_turnback = 1
+            if len(canals_passed_through) > max_turnback_loops:
+              if len(set(canals_passed_through[-max_turnback_loops:])) == 1:
+                repeat_turnback = 0
+            if repeat_turnback == 1:
+              remaining_excess_flow, unmet_canal_demands = self.distribute_canal_deliveries(dowy, canal, prev_canal, contract_canal, turnback_flow,
+                                                                                            turnback_end, wateryear, flow_dir,flow_type, search_type, canals_passed_through)
+              excess_flow += remaining_excess_flow
+              available_capacity_int = max(available_flow, 0.0)
+              for zz in type_list:
+                if type_demands[zz] > self.epsilon:
+                  type_fractions[zz] = max(min(available_capacity_int / type_demands[zz], 1.0), 0.0)
+                else:
+                  type_fractions[zz] = 0.0
+                available_capacity_int -= type_demands[zz] * type_fractions[zz]
 
 	  #sum remaining demand after all deliveries have been madw
     unmet_demands = {}
